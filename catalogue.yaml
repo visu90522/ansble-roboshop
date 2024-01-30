@@ -24,8 +24,14 @@
   - name: check /app directory exits or not
     ansible.builtin.stat:
       path: /app
-      register: directory
+    register: directory
 
   - name: check /app directory exits or not
     ansible.builtin.debug:
       msg: "output: {{directory}}"
+  
+  - when: directory.stat.exists == False
+    name: create /app directory
+    ansible.builtin.file:
+      path: /app
+      state: directory
