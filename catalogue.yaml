@@ -65,11 +65,11 @@
       name: mongodb-org-shell
       state: installed
 
-  - name: install dependency
+  - name: load catalogue date
     ansible.builtin.command: mongo --host mongodb.vishwadevops.online </app/schema/catalogue.js
 
   - name: restart catalogue
     ansible.builtin.service:
       name: catalogue
       state: restarted
-      enabled: true
+      enabled: true 
