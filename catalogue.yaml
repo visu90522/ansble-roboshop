@@ -4,3 +4,28 @@
   tasks:
   - name: Setup NodeJS repos. Vendor is providing a script to setup the repos.
     ansible.builtin.shell: "curl -sL https://rpm.nodesource.com/setup_lts.x | bash"
+
+  - name: install nodejs
+    ansible.builtin.yum:
+      name: nodejs
+      state: installed
+
+  - name: check roboshop user exits or not
+    ansible.builtin.command: id roboshop
+    register: out
+    ignore_errors: true
+
+  - when: out.rc != 0
+    name: create user roboshop
+    become: yes # we need sudo access for this task only
+    ansible.builtin.user:
+      name: roboshop
+
+  - name: check /app directory exits or not
+    ansible.builtin.stat:
+      path: /app
+      register: directory
+
+  - name: check /app directory exits or not
+    ansible.builtin.debug:
+      msg: "output: {{directory}}"
