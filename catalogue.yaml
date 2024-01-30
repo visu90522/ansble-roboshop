@@ -1,18 +1,18 @@
-- name: install catalogue components
+- name: Install catalogue component
   hosts: catalogue
   become: yes
   tasks:
-  - name: Setup NodeJS repos. Vendor is providing a script to setup the repos.
+  - name: setup NPM source
     ansible.builtin.shell: "curl -sL https://rpm.nodesource.com/setup_lts.x | bash"
 
-  - name: install nodejs
+  - name: Install NodeJS
     ansible.builtin.yum:
       name: nodejs
       state: installed
 
-  - name: check roboshop user exits or not
+  - name: check roboshop user exist or not
     ansible.builtin.command: id roboshop
-    register: out
+    register: out #output is variable name
     ignore_errors: true
 
   - when: out.rc != 0
@@ -21,15 +21,15 @@
     ansible.builtin.user:
       name: roboshop
 
-  - name: check /app directory exits or not
+  - name: check /app directory exists or not
     ansible.builtin.stat:
       path: /app
     register: directory
 
-  - name: check /app directory exits or not
+  - name: print the directory stats
     ansible.builtin.debug:
       msg: "output: {{directory}}"
-  
+
   - when: directory.stat.exists == False
     name: create /app directory
     ansible.builtin.file:
@@ -40,13 +40,14 @@
     ansible.builtin.get_url:
       url: https://roboshop-builds.s3.amazonaws.com/catalogue.zip
       dest: /tmp
-    
-  - name: extract catalogue or unarchive the zip file
+
+  - name: extract catalogue artifact
     ansible.builtin.unarchive:
       src: /tmp/catalogue.zip
       dest: /app
       remote_src: yes
-  - name: install dependency
+
+  - name: install dependencies
     ansible.builtin.command: npm install
     args:
       chdir: /app
@@ -56,10 +57,15 @@
       src: catalogue.service
       dest: /etc/systemd/system/catalogue.service
 
-  - name: deman reload
+  - name: deamon reload
     ansible.builtin.systemd:
       daemon_reload: true
-  
+
+  - name: copy mongo repo to yum.repos.d
+    ansible.builtin.copy:
+      src: mongodb.repo
+      dest: /etc/yum.repos.d/mongo.repo
+
   - name: Install MongoDB
     ansible.builtin.yum:
       name: mongodb-org-shell
