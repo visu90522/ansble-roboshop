@@ -6,3 +6,6 @@ catalogue.vishwadevops.online
 
 [web]
 web.vishwadevops.online
+
+[redis]
+redis.vishwadevops.online
