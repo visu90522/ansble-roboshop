@@ -21,3 +21,9 @@ mysql.vishwadevops.online
 
 [shipping]
 shipping.vishwadevops.online
+
+[payment]
+payment.vishwadevops.online
+
+[rabbitmq]
+rabbitmq.vishwadevops.online
